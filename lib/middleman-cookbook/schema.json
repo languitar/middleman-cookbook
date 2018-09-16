@@ -1,0 +1,147 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Pyprika Recipe",
+    "description": "A cookbook recipe following the pyprika format",
+    "type": "object",
+
+    "definitions": {
+        "recipe": {
+            "type": "object",
+            "properties": {
+
+                "name": {
+                    "description": "Name of the recipe",
+                    "type": "string"
+                },
+
+                "index": {
+                    "description": "Some random unique key",
+                    "type": "string"
+                },
+
+                "servings": {
+                    "description": "Number or range of servings produced",
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                        }
+                    ]
+                },
+
+                "source": {
+                    "description": "Source of the recipe",
+                    "type": "string"
+                },
+
+                "source_url": {
+                    "description": "URL to the source",
+                    "type": "string",
+                    "format": "uri"
+                },
+
+                "prep_time": {
+                    "description": "Time required for preparation in minutes",
+                    "type": "number",
+                    "minimum": 0
+                },
+
+                "cook_time": {
+                    "description": "Time required for cooking in minutes",
+                    "type": "number",
+                    "minimum": 0
+                },
+
+                "notes": {
+                    "description": "Additional notes regarding the recipe",
+                    "type": "string"
+                },
+
+                "ingredients": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "quantity": {
+                                "description": "Number expressing the amount of the ingredient",
+                                "oneOf":[
+                                    {
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    {
+                                        "type": "string",
+                                        "pattern": "^([0-9]+ )?[0-9]+/[0-9]+$"
+                                    }
+                                ]
+                            },
+                            "unit": {
+                                "description": "The measurement unit",
+                                "type": "string"
+                            },
+                            "ingredient": {
+                                "description": "The ingredient",
+                                "type": "string"
+                            }
+                        },
+                        "required": ["ingredient"],
+                        "dependencies": {
+                            "unit": ["quantity"]
+                        }
+                    }
+                },
+
+                "directions": {
+                    "description": "List of tasks to perform",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+
+            "required": ["name"]
+        },
+        "rootRecipe": {
+            "type": "object",
+            "properties": {
+                "components": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            { "$ref": "#/definitions/recipe" },
+                            {
+                                "propertyNames": {
+                                    "enum": ["name", "index", "servings", "source", "source_url", "prep_time", "cook_time", "notes", "ingredients", "directions"]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "picture": {
+                    "description": "link to a picture file",
+                    "type": "string"
+                }
+            }
+        }
+    },
+
+    "allOf": [
+        { "$ref": "#/definitions/recipe" },
+        { "$ref": "#/definitions/rootRecipe" },
+        {
+            "propertyNames": {
+                "enum": ["name", "index", "servings", "source", "source_url", "prep_time", "cook_time", "notes", "ingredients", "directions", "picture", "components"]
+            }
+        }
+    ]
+}
